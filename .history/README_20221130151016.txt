@@ -1,0 +1,2 @@
+to use celery.
+ 1. pip install celery==5.2.7  

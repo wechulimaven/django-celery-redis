@@ -1,0 +1,7 @@
+to use celery.
+Install redis on your machine
+To start redis services
+brew services stop redis
+
+ 1. pip install celery==5.2.7 version 3.1 not favorable will throw namespace error
+ 2. pip install django-celery-results  #Storing the results

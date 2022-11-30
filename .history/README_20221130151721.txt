@@ -1,0 +1,47 @@
+to use celery.
+Install redis on your machine
+To start redis services
+    brew services start redis
+    brew services stop redis
+    redis-cli #To show redis intergrated terminal cli
+
+ 1. pip install celery==5.2.7 version 3.1 not favorable will throw namespace error
+ 2. pip install django-celery-results  #Storing the results
+ 3. pip install redis
+
+ In settings.py add:
+
+    CELERY_BROKER_URL ='redis://127.0.0.1:6379' #Url to your redis broker
+    CELERY_ACCEPT_CONTENT = ['application/json'] #define the type of response
+    CELERY_RESULT_SERIALIZER = 'json' 
+    CELERY_TASK_SERIALIZER = 'json'
+    CELERY_TIMEZONE = 'Africa/Nairobi' #defining timezone 
+
+    CELERY_RESULT_BACKEND= 'django-db'# Helps us to view status of running tasks
+
+To see results add 
+    'django_celery_results' to installed apps
+
+In main project folder create celery.py file and add:
+    from __future__ import absolute_import, unicode_literals
+    import os
+
+    from celery import Celery
+    from django.conf import settings
+
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_celery.settings') #Project directory to settings file
+
+    app = Celery('django_celery') # ADD PROJECT NAME
+    app.conf.enable_utc = False # Telling django to use our own written timezone
+
+    app.conf.update(timezone = 'Africa/Nairobi')
+
+
+    app.config_from_object(settings,namespace='CELERY') #The uppercase name-space means that all Celery configuration options must be specified in uppercase , and start with CELERY_
+
+    app.autodiscover_tasks() #TO automatically discover tasks from all of your installed apps, following the tasks.py convention
+
+    @app.task(bind=True)
+    def debug_task(self):
+        print(f'Request: {self.request!r}')
+
